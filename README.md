@@ -35,5 +35,66 @@ The **Adamic-Adar (AA)** and **Common Neighbors (CN)** models showed the most st
 - Yeseul Han
 - Xi Lu
 - Erfan YousefMoumji
+  
+## API Service
 
+This project has been extended into a production-style RESTful API service using FastAPI.
+
+### Additional Tech Stack
+- **Backend**: FastAPI, Uvicorn
+- **Architecture**: In-memory graph loading at startup for fast response
+
+### Project Structure
+```
+├── notebook/
+│   └── Amazon_CoPurchase_Network_Analysis.ipynb  # Original analysis (Google Colab)
+├── api/                                           # FastAPI backend service
+│   ├── app/
+│   │   ├── main.py                  # App entry point, graph loading on startup
+│   │   ├── api/
+│   │   │   └── recommendations.py   # Recommendation endpoints
+│   │   ├── services/
+│   │   │   ├── data_loader.py       # Data loading & graph construction
+│   │   │   └── recommend_service.py # CN / Jaccard / AA / PA algorithms
+│   │   └── store/
+│   │       └── graph_store.py       # In-memory graph store
+│   ├── .env.example
+│   └── requirements.txt
+└── README.md
+```
+
+### Getting Started
+```bash
+cd api
+python -m venv venv
+venv\Scripts\activate        # Windows
+pip install -r requirements.txt
+cp .env.example .env
+uvicorn app.main:app --reload
+```
+
+Visit `http://localhost:8000/docs` for the interactive API documentation.
+
+### API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/recommend/{asin}` | Get Top-K product recommendations |
+| GET | `/health` | Server health check |
+
+### Example
+```bash
+curl -X GET "http://localhost:8000/recommend/B00000J3II?category=Electronics&algorithm=AA&top_k=5"
+```
+```json
+{
+  "asin": "B00000J3II",
+  "category": "Electronics",
+  "algorithm": "AA",
+  "recommendations": [
+    { "asin": "B00005AT7Y", "score": 1.4427 },
+    { "asin": "B0000300QQ", "score": 1.2795 }
+  ]
+}
+```
 ---
